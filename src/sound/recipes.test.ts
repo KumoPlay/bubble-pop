@@ -23,33 +23,37 @@ import {
   type Sound,
 } from './recipes';
 
-/** Every layer of every sound stays soft, never shrill, never clicky, never long. */
-function expectGentle(sound: Sound): void {
-  expect(sound.length).toBeGreaterThan(0);
+/**
+ * What is not gentle about a sound: every layer must stay soft, never shrill,
+ * never clicky, never long. Returns the problems in words (none = gentle).
+ * Plain checks rather than one `expect` per value, so thousands of rolls stay quick.
+ */
+function harshness(name: string, sound: Sound): string[] {
+  const problems: string[] = [];
+  const check = (ok: boolean, what: string) => {
+    if (!ok) problems.push(`${name}: ${what}`);
+  };
+  check(sound.length > 0, 'no layers');
   for (const layer of sound) {
-    expect(layer.gain).toBeGreaterThan(0);
-    expect(layer.gain).toBeLessThanOrEqual(SOUND_LIMITS.gain);
-    expect(layer.attack).toBeGreaterThanOrEqual(SOUND_LIMITS.minAttack);
-    expect(layer.decay).toBeGreaterThan(layer.attack);
-    expect(layer.at).toBeGreaterThanOrEqual(0);
-    if (layer.source === 'noise') expect(layer.freq).toBeUndefined();
+    check(layer.gain > 0 && layer.gain <= SOUND_LIMITS.gain, `gain ${layer.gain}`);
+    check(layer.attack >= SOUND_LIMITS.minAttack, `attack ${layer.attack} (clicks)`);
+    check(layer.decay > layer.attack, `decay ${layer.decay}`);
+    check(layer.at >= 0, `starts at ${layer.at}`);
+    if (layer.source === 'noise') check(layer.freq === undefined, 'noise with a pitch');
     else {
-      expect(layer.freq).toBeGreaterThan(20);
-      expect(layer.freq).toBeLessThanOrEqual(SOUND_LIMITS.toneFreq);
-      if (layer.freqEnd !== undefined) expect(layer.freqEnd).toBeGreaterThan(20);
+      check(layer.freq !== undefined && layer.freq > 20 && layer.freq <= SOUND_LIMITS.toneFreq, `pitch ${layer.freq}`);
+      check(layer.freqEnd === undefined || layer.freqEnd > 20, `glide to ${layer.freqEnd}`);
     }
     if (layer.filter) {
-      expect(layer.filter.freq).toBeLessThanOrEqual(SOUND_LIMITS.filterFreq);
-      expect(layer.filter.freqEnd ?? 0).toBeLessThanOrEqual(SOUND_LIMITS.filterFreq);
-      expect(layer.filter.q).toBeLessThanOrEqual(4);
+      check(layer.filter.freq <= SOUND_LIMITS.filterFreq, `filter ${layer.filter.freq}`);
+      check((layer.filter.freqEnd ?? 0) <= SOUND_LIMITS.filterFreq, `filter glide ${layer.filter.freqEnd}`);
+      check(layer.filter.q <= 4, `filter q ${layer.filter.q}`);
     }
-    if (layer.wobble) {
-      // A gentle wobble, never a fast flutter.
-      expect(layer.wobble.rate).toBeLessThanOrEqual(20);
-      expect(layer.wobble.depth).toBeLessThanOrEqual(0.1);
-    }
+    // A gentle wobble, never a fast flutter.
+    if (layer.wobble) check(layer.wobble.rate <= 20 && layer.wobble.depth <= 0.1, 'wobble too fast or deep');
   }
-  expect(soundLength(sound)).toBeLessThanOrEqual(SOUND_LIMITS.maxLength);
+  check(soundLength(sound) <= SOUND_LIMITS.maxLength, `length ${soundLength(sound)}`);
+  return problems;
 }
 
 const loudness = (sound: Sound) => sound.reduce((sum, layer) => sum + layer.gain, 0);
@@ -58,25 +62,28 @@ const pitchOf = (sound: Sound) => sound.find((l) => l.source === 'sine')!.freq!;
 describe('sound recipes', () => {
   it('stay gentle however the dice roll', () => {
     const rng = makeRng(42);
+    const problems: string[] = [];
+    const check = (name: string, sound: Sound) => problems.push(...harshness(name, sound));
     for (let i = 0; i < 3000; i += 1) {
-      for (const size of [34, 48, 70]) expectGentle(rollWrapPop(rng, size, i % 5 === 0));
-      expectGentle(rollCrinkle(rng));
-      expectGentle(rollSheetSlide(rng));
-      expectGentle(rollSheetDone(rng));
+      for (const size of [34, 48, 70]) check(`wrap pop ${size}`, rollWrapPop(rng, size, i % 5 === 0));
+      check('crinkle', rollCrinkle(rng));
+      check('sheet slide', rollSheetSlide(rng));
+      check('sheet done', rollSheetDone(rng));
       for (const r of [5, 20, 46]) {
-        expectGentle(rollSoapPop(rng, r));
-        expectGentle(rollSoapMerge(rng, r));
+        check(`soap pop ${r}`, rollSoapPop(rng, r));
+        check(`soap merge ${r}`, rollSoapMerge(rng, r));
       }
-      expectGentle(rollSoapBlip(rng));
-      expectGentle(rollCloudPoke(rng));
-      expectGentle(rollGiggle(rng));
-      expectGentle(rollOoh(rng));
-      expectGentle(rollBoing(rng, 1 + rng() * 2));
-      expectGentle(rollSurprise(rng));
+      check('soap blip', rollSoapBlip(rng));
+      check('cloud poke', rollCloudPoke(rng));
+      check('giggle', rollGiggle(rng));
+      check('ooh', rollOoh(rng));
+      check('boing', rollBoing(rng, 1 + rng() * 2));
+      check('surprise', rollSurprise(rng));
     }
-    expectGentle(rollGoldenArrive());
-    expectGentle(rollGoldenPop());
-    expectGentle(rollKumoGiggle());
+    check('golden arrive', rollGoldenArrive());
+    check('golden pop', rollGoldenPop());
+    check('kumo giggle', rollKumoGiggle());
+    expect(problems.slice(0, 10)).toEqual([]);
   });
 
   it('keep held sounds (blowing, stretching) quiet', () => {
