@@ -1,0 +1,10 @@
+[
+  { "id": "none" },
+  { "id": "bow", "picture": "bow.svg", "width": 0.32, "x": 0.42, "tilt": 18, "sink": 0.3 },
+  { "id": "beret", "picture": "beret.svg", "width": 0.5, "x": -0.12, "tilt": -12, "sink": 0.14 },
+  { "id": "flower-crown", "picture": "flower-crown.svg", "width": 0.62, "x": 0, "tilt": 0, "sink": 0.12 },
+  { "id": "party", "picture": "party.svg", "width": 0.3, "x": 0.1, "tilt": 10, "sink": 0.08 },
+  { "id": "beanie", "picture": "beanie.svg", "width": 0.52, "x": 0, "tilt": -4, "sink": 0.16 },
+  { "id": "strawberry", "picture": "strawberry.svg", "width": 0.5, "x": 0.02, "tilt": 6, "sink": 0.12 },
+  { "id": "crown", "picture": "crown.svg", "width": 0.38, "x": 0, "tilt": 0, "sink": 0.1 }
+]

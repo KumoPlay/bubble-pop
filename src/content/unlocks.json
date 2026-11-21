@@ -1,0 +1,7 @@
+{
+  "starters": ["wrap-color/petal", "wrap-color/sky", "wrap-pattern/classic", "wand/round", "face/classic", "hat/none"],
+  "goldenOnly": ["wrap-color/gold", "wrap-pattern/kumo", "wand/rainbow", "face/star-eyes", "hat/crown"],
+  "pace": { "first": 30, "step": 20, "most": 250, "jitter": 0.25 },
+  "golden": { "notBefore": 90, "every": 360, "gap": 180, "floatSeconds": 12 },
+  "surpriseGap": 15
+}

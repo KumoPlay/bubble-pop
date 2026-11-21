@@ -1,0 +1,8 @@
+[
+  { "id": "round", "shape": "circle", "ring": ["#9F88E6"], "handle": "#C8B8F0", "film": ["#F9A8C8", "#A9D3F7", "#FFE08A", "#A6E3C5"] },
+  { "id": "heart", "shape": "heart", "ring": ["#F07BA8"], "handle": "#FDE3EC", "film": ["#F9A8C8", "#FFC29E", "#CDB9F5", "#F7A1C4"] },
+  { "id": "star", "shape": "star", "ring": ["#F2BE3C"], "handle": "#FFF4CC", "film": ["#FFE08A", "#FFC29E", "#A9D3F7", "#F9A8C8"] },
+  { "id": "flower", "shape": "flower", "ring": ["#62BD95"], "handle": "#DDF7EA", "film": ["#A6E3C5", "#FFE08A", "#F9A8C8", "#A9D3F7"] },
+  { "id": "cloud", "shape": "cloud", "ring": ["#4EA3EA"], "handle": "#DDEEFC", "film": ["#A9D3F7", "#CDB9F5", "#A6E3C5", "#FFFFFF"] },
+  { "id": "rainbow", "shape": "circle", "ring": ["#F07BA8", "#F2BE3C", "#62BD95", "#4EA3EA", "#9F88E6"], "handle": "#FFF8EE", "film": ["#F9A8C8", "#FFC29E", "#FFE08A", "#A6E3C5", "#A9D3F7", "#CDB9F5"] }
+]

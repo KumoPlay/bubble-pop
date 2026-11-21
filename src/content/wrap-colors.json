@@ -1,0 +1,11 @@
+[
+  {"id": "petal", "bubble": "#F9B8D0"},
+  {"id": "sky", "bubble": "#A9D3F7"},
+  {"id": "mint", "bubble": "#A6E3C5"},
+  {"id": "butter", "bubble": "#FFDB7A"},
+  {"id": "lilac", "bubble": "#CDB9F5"},
+  {"id": "peach", "bubble": "#FFC29E"},
+  {"id": "lavender", "bubble": "#B6A3EE"},
+  {"id": "clear", "bubble": "#D9E4F1", "sheet": "#F3F6FA", "backdrop": ["#FFF8EE", "#FDE3EC"]},
+  {"id": "gold", "bubble": "#F7CF6B", "rim": "#C99A2E", "sheet": "#FFF6DC", "backdrop": ["#FFF8E6", "#FDE6AE"]}
+]

@@ -1,0 +1,28 @@
+{
+  "name": "bubble-pop",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Bubble Pop: a cozy pocket fidget toy. Pop bubble wrap, blow soap bubbles, squish a cloud. A KumoPlay game.",
+  "scripts": {
+    "dev": "vite",
+    "dev:phone": "vite --host",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "preview:phone": "vite preview --host",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "fake-indexeddb": "^6.2.8",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.1.0"
+  },
+  "dependencies": {
+    "@fontsource-variable/nunito": "^5.3.0"
+  }
+}

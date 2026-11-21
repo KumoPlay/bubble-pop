@@ -1,0 +1,705 @@
+/*
+ * Bubble Pop styles. The KumoPlay colours (--plum, --petal …) come from
+ * src/content/palette.json, set on :root by main.ts. Much of this keeps the
+ * browser out of the way of many fingers: no scrolling, bouncing, zooming,
+ * selecting, callouts or dragging (except scrolling inside the collection).
+ */
+:root {
+  --surface: #ffffff;
+  --soft: #f4f0fc;
+  --border: #e3dbf7;
+  --muted: #645c81;
+  --gold: #ffd66b;
+  --shadow: 0 6px 18px rgba(61, 53, 102, 0.16);
+  --safe-bottom: env(safe-area-inset-bottom);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  touch-action: none;
+  -webkit-user-drag: none;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  position: fixed;
+  inset: 0;
+  background: var(--petal, #fde3ec);
+  color: var(--plum, #3d3566);
+  font-family: 'Nunito Variable', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.35;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+#stage {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  outline: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  margin: 0;
+  cursor: pointer;
+}
+
+svg {
+  display: block;
+}
+
+:focus-visible {
+  outline: 3px solid var(--violet, #7c63d6);
+  outline-offset: 2px;
+}
+
+/* ─── The bar ─────────────────────────────────────────────────────────── */
+
+.bar {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--safe-bottom) + 10px);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(255, 248, 238, 0.94);
+  box-shadow:
+    var(--shadow),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.8);
+}
+
+.bar-button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.bar-button svg {
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+}
+
+.bar-side svg {
+  width: 34px;
+  height: 34px;
+}
+
+.bar-side {
+  width: 48px;
+  height: 48px;
+}
+
+.bar-toy.is-current {
+  background: var(--petal, #fde3ec);
+  box-shadow: inset 0 0 0 2.5px var(--lilac, #c8b8f0);
+}
+
+.bar-button:active {
+  transform: scale(0.92);
+}
+
+/* A little dot for "something new is waiting here". */
+.dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--candy, #f07ba8);
+  box-shadow: 0 0 0 2px #fff;
+  opacity: 0;
+  transform: scale(0.4);
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease;
+  pointer-events: none;
+}
+
+.has-new > .dot,
+.is-new > .dot {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Phones on their side have little height: a smaller bar. */
+@media (max-height: 500px) {
+  .bar {
+    bottom: calc(var(--safe-bottom) + 6px);
+    padding: 3px;
+  }
+
+  .bar-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .bar-side {
+    width: 40px;
+    height: 40px;
+  }
+
+  .bar-button svg {
+    width: 34px;
+    height: 34px;
+  }
+
+  .bar-side svg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* ─── Sheets ──────────────────────────────────────────────────────────── */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(42, 37, 70, 0);
+  transition: background-color 220ms ease;
+}
+
+.overlay.is-open {
+  background: rgba(42, 37, 70, 0.28);
+}
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  width: min(560px, 100%);
+  max-height: min(86vh, 760px);
+  margin: 0 auto;
+  padding: 10px 16px calc(var(--safe-bottom) + 16px);
+  border-radius: 28px 28px 0 0;
+  background: var(--cream, #fff8ee);
+  box-shadow: 0 -8px 30px rgba(61, 53, 102, 0.18);
+  transform: translateY(105%);
+  transition: transform 260ms cubic-bezier(0.2, 0.9, 0.3, 1.1);
+  outline: none;
+}
+
+.overlay.is-open .sheet {
+  transform: none;
+}
+
+.overlay.is-closing .sheet {
+  transform: translateY(105%);
+  transition-duration: 200ms;
+}
+
+@media (min-width: 700px) and (min-height: 560px) {
+  .overlay {
+    align-items: center;
+  }
+
+  .sheet {
+    border-radius: 28px;
+    padding-bottom: 20px;
+  }
+}
+
+.sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+}
+
+.sheet-title {
+  flex: 1;
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+.sheet-close {
+  margin-left: auto;
+}
+
+.sheet-body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 2px 8px;
+}
+
+.scrolls,
+.scrolls * {
+  touch-action: pan-y;
+}
+
+.slider,
+.slider * {
+  touch-action: none;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  padding: 6px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--soft);
+}
+
+.icon-button svg {
+  width: 100%;
+  height: 100%;
+}
+
+.icon-button.soft {
+  background: var(--petal, #fde3ec);
+}
+
+/* ─── Collection ──────────────────────────────────────────────────────── */
+
+.tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.tab {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  padding: 5px;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+}
+
+.tab[aria-selected='true'] {
+  background: var(--petal, #fde3ec);
+  box-shadow: inset 0 0 0 2.5px var(--lilac, #c8b8f0);
+}
+
+.tab svg {
+  width: 100%;
+  height: 100%;
+}
+
+.cards-section h3 {
+  margin: 14px 4px 8px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 10px;
+}
+
+.card {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  padding: 4px;
+  border: 0;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 2px var(--border);
+  transition: transform 140ms ease;
+}
+
+.card canvas,
+.card svg {
+  width: 64px;
+  height: 64px;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.card svg {
+  width: 52px;
+  height: 52px;
+}
+
+.card:active {
+  transform: scale(0.94);
+}
+
+.card.is-chosen {
+  background: var(--petal, #fde3ec);
+  box-shadow: inset 0 0 0 3px var(--lavender, #9f88e6);
+}
+
+.card.is-golden:not(.is-locked) {
+  box-shadow: inset 0 0 0 2px var(--gold);
+}
+
+.card.is-golden.is-chosen {
+  box-shadow:
+    inset 0 0 0 3px var(--lavender, #9f88e6),
+    0 0 0 3px var(--gold);
+}
+
+/* Not found yet: a soft cloud shape, no numbers. */
+.card.is-locked {
+  background: var(--soft);
+  box-shadow: none;
+}
+
+.card.is-locked.is-golden {
+  box-shadow: inset 0 0 0 2px rgba(255, 214, 107, 0.7);
+}
+
+.locked-cloud {
+  width: 46px;
+  height: 30px;
+  position: relative;
+  border-radius: 16px;
+  background: var(--border);
+}
+
+.locked-cloud::before,
+.locked-cloud::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+.locked-cloud::before {
+  width: 22px;
+  height: 22px;
+  left: 6px;
+  top: -10px;
+}
+
+.locked-cloud::after {
+  width: 18px;
+  height: 18px;
+  right: 7px;
+  top: -6px;
+}
+
+/* ─── Settings ────────────────────────────────────────────────────────── */
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 2px solid var(--soft);
+}
+
+.row-stack {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.row-center {
+  justify-content: center;
+  border-bottom: 0;
+  padding-top: 18px;
+}
+
+.row-icon {
+  width: 34px;
+  height: 34px;
+  flex: none;
+}
+
+.row-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.row-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.row-label {
+  font-weight: 800;
+}
+
+.row-help {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.row > .slider {
+  flex: 1;
+  max-width: 220px;
+}
+
+.row-stack > .slider {
+  max-width: none;
+}
+
+.slider {
+  position: relative;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+}
+
+.slider-track {
+  position: relative;
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--border);
+}
+
+.slider-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--lavender, #9f88e6);
+}
+
+.slider-thumb {
+  position: absolute;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 2px 6px rgba(61, 53, 102, 0.25),
+    inset 0 0 0 3px var(--lavender, #9f88e6);
+  transform: translate(-50%, -50%);
+}
+
+.slider:focus-visible .slider-thumb {
+  outline: 3px solid var(--violet, #7c63d6);
+  outline-offset: 2px;
+}
+
+.slider.is-off {
+  opacity: 0.4;
+}
+
+.toggle {
+  position: relative;
+  width: 58px;
+  height: 34px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--border);
+  transition: background-color 160ms ease;
+}
+
+.toggle-knob {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(61, 53, 102, 0.2);
+  transition: transform 180ms ease;
+}
+
+.toggle[aria-checked='true'] {
+  background: var(--lavender, #9f88e6);
+}
+
+.toggle[aria-checked='true'] .toggle-knob {
+  transform: translateX(24px);
+}
+
+.segments {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 8px 0 4px;
+}
+
+.segment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 2px var(--border);
+  font-size: 0.85rem;
+}
+
+.segment svg {
+  width: 30px;
+  height: 30px;
+}
+
+.segment[aria-pressed='true'] {
+  background: var(--petal, #fde3ec);
+  box-shadow: inset 0 0 0 3px var(--lavender, #9f88e6);
+}
+
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 10px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--soft);
+  font-weight: 800;
+  overflow: hidden;
+}
+
+.button.primary {
+  background: var(--lavender, #9f88e6);
+  color: #fff;
+}
+
+.button.quiet {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px var(--border);
+}
+
+.button-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.button-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Hold to confirm: fills up while held. */
+.hold-button {
+  box-shadow: inset 0 0 0 2px var(--candy, #f07ba8);
+}
+
+.hold-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--candy, #f07ba8);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition-property: transform;
+  transition-timing-function: linear;
+}
+
+.hold-button.is-holding .hold-fill {
+  transform: scaleX(1);
+}
+
+.hold-label {
+  position: relative;
+}
+
+.made-by {
+  margin: 14px 0 0;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* ─── Dialogs ─────────────────────────────────────────────────────────── */
+
+.dialog {
+  text-align: center;
+}
+
+.dialog .sheet-body {
+  padding-top: 0;
+}
+
+.dialog-picture {
+  width: 72px;
+  height: 72px;
+  margin: 4px auto 0;
+}
+
+.dialog-picture svg {
+  width: 100%;
+  height: 100%;
+}
+
+.dialog-text {
+  margin: 10px 8px 18px;
+  font-weight: 700;
+}
+
+.dialog-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 340px;
+  margin: 0 auto;
+}
+
+:root.calm .bar-button,
+:root.calm .card,
+:root.calm .toggle,
+:root.calm .toggle-knob,
+:root.calm .overlay,
+:root.calm .sheet,
+:root.calm .dot {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar-button,
+  .card,
+  .toggle,
+  .toggle-knob,
+  .overlay,
+  .sheet,
+  .dot {
+    transition: none;
+  }
+}

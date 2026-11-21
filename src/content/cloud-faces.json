@@ -1,0 +1,9 @@
+[
+  { "id": "classic", "eyes": "oval", "mouth": "smile", "blush": "#F8A9C6" },
+  { "id": "sparkle", "eyes": "sparkle", "mouth": "smile", "blush": "#F8A9C6" },
+  { "id": "kitty", "eyes": "round", "mouth": "cat", "blush": "#F8A9C6", "whiskers": true },
+  { "id": "lashes", "eyes": "oval", "mouth": "tiny", "blush": "#F7A1C4", "lashes": true },
+  { "id": "freckles", "eyes": "round", "mouth": "smile", "blush": "#FFC29E", "freckles": true },
+  { "id": "sunny", "eyes": "happy", "mouth": "grin", "blush": "#F8A9C6" },
+  { "id": "star-eyes", "eyes": "star", "mouth": "grin", "blush": "#FFD66B" }
+]

@@ -1,0 +1,10 @@
+[
+  {"id": "classic", "shape": "circle", "size": 48, "gap": 12, "layout": "offset"},
+  {"id": "mini", "shape": "circle", "size": 34, "gap": 10, "layout": "offset"},
+  {"id": "big", "shape": "circle", "size": 70, "gap": 16, "layout": "offset"},
+  {"id": "hearts", "shape": "heart", "size": 54, "gap": 12, "layout": "offset"},
+  {"id": "stars", "shape": "star", "size": 56, "gap": 12, "layout": "grid"},
+  {"id": "clouds", "shape": "cloud", "size": 58, "gap": 12, "layout": "offset"},
+  {"id": "flowers", "shape": "flower", "size": 54, "gap": 12, "layout": "offset"},
+  {"id": "kumo", "shape": "kumo", "size": 58, "gap": 12, "layout": "offset", "face": true}
+]
